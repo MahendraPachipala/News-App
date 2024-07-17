@@ -1,105 +1,80 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import NavBar from "../Components/navbar";
+import {useAuth} from '../config/AuthContext';
 import { auth,db } from "../config/firebase";
-import {setDoc,doc,arrayUnion,updateDoc} from "firebase/firestore";
-import Cookies from "js-cookie";
-import { useAuth } from "../config/AuthContext";
-import {toast} from "react-toastify";
+import {getDoc,doc,arrayUnion} from "firebase/firestore";
+import NavBar from '../Components/navbar';
 
 
 
-function Article() {
-  const [data, setData] = useState([]);
- 
-  const user = useAuth().currUser;
-  const userId = user.uid;
-  
-  const [darkmode,setdarkmode] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [summary, setSummary] = useState("");
-  const [profile,isprofile] = useState(true);
-  const date = new Date();
-  const day = String(date.getDate()-1).padStart(2, "0");
-  const month = String(date.getMonth()+1).padStart(2, "0");
-  const year = date.getFullYear();
-  const currdate = `${year}-${month}-${day}`;
+const Bookmarks = ()=>{
+    const user = useAuth().currUser;
+    const userId = user.uid;
+    const [bookmarks,setbookmarks] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [darkmode,setdarkmode] = useState(true);
+    const ref = doc(db,"Users",userId);
 
-  // useEffect(()=>{
-  //   auth.onAuthStateChanged((user)=>{
-  //     console.log(user);
-  //     Cookies.set('userId',user.uid);
-  //   })
-  // },[]);
+    const handledarkmode = () => {
+        setdarkmode(darkmode?false:true);
+      }
+      
+    useEffect(()=>{
+       
+        const getbooks= async ()=>{
+            const r = await getDoc(ref);
+            const books =r.data();
+            setbookmarks(books.articles);
+        }
+        getbooks();
+        
+    },[])
 
-  const handledarkmode = () => {
-    setdarkmode(darkmode?false:true);
-    console.log(darkmode);
-  }
-  
-  const handleClick = async (url) => {
-    setOpen(true);
-    
-    const options = {
-      method: "GET",
-      url: "https://article-extractor-and-summarizer.p.rapidapi.com/summarize",
-      params: {
-        url: url,
-        lang: "en",
-        engine: "2",
-      },
-      headers: {
-        "x-rapidapi-key": "69f8d926dcmshf47e885ee5df937p11305ajsn790164993433",
-        "x-rapidapi-host": "article-extractor-and-summarizer.p.rapidapi.com",
-      },
-    };
-    try {
-      const response = await axios.request(options);
-      setSummary(response.data.summary);
-    } catch (error) {
-      console.error(error);
+    const removeBookmark = async ()=>{
+
     }
-  };
 
-  const handleBookmark = async (article)=>{
+    const handleClick = async (url) => {
+        setOpen(true);
+        
+        // const options = {
+        //   method: "GET",
+        //   url: "https://article-extractor-and-summarizer.p.rapidapi.com/summarize",
+        //   params: {
+        //     url: url,
+        //     lang: "en",
+        //     engine: "2",
+        //   },
+        //   headers: {
+        //     "x-rapidapi-key": "69f8d926dcmshf47e885ee5df937p11305ajsn790164993433",
+        //     "x-rapidapi-host": "article-extractor-and-summarizer.p.rapidapi.com",
+        //   },
+        // };
+        // try {
+        //   const response = await axios.request(options);
+        //   setSummary(response.data.summary);
+        // } catch (error) {
+        //   console.error(error);
+        // }
+      };
 
-    // console.log(userId);
-    // console.log(article);
-    updateDoc(doc(db,"Users",userId),{
-      articles: arrayUnion(article)
-    })
-  }
 
-  useEffect(() => {
-axios.get(`https://newsapi.org/v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&apiKey=fe368080bde84609b012936a091fbe43`)
-.then((response) => {
-setData(response.data.articles);
-})
-.catch((error) => {
-console.error("Error fetching data: ", error);
-});
-}, []);
 
-  const handleClose = () => {
-    setOpen(false);
-    setSummary(null);
-  };
-
-  return (
-    <div className = {`${darkmode ? "" :"dark"}`}>
-    <div className="bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5">
+    //console.log(bookmarks);
     
-    <NavBar handledarkmode={handledarkmode}/>
-      <div
+    return(
+        <div className = {`${darkmode ? "" :"dark"}`} >
+        <div className="bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5">
+            <NavBar handledarkmode={handledarkmode}/>
+            <div
         className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"
         
       >
-        {data.length > 0 ? (
+        {bookmarks.length > 0 ? (
           <div>
-            {data.map((article, index) => (
+            {bookmarks.map((article, index) => (
               <div className="relative" key={index}>
                 <label className="ui-bookmark right-1 top-2 absolute">
-                  <input type="checkbox" onChange={() => handleBookmark(article)}/>
+                  <input type="checkbox" onChange={() => removeBookmark(article)}/>
                   <div className="bookmark">
                     <svg viewBox="0 0 32 32">
                       <g>
@@ -231,7 +206,7 @@ console.error("Error fetching data: ", error);
                   </div>
                 </div>
 
-                {index !== data.length - 1 ? (
+                {index !== bookmarks.length - 1 ? (
                   <hr className="bg-gray-400 h-0.5 w-11/12 m-auto my-2" />
                 ) : (
                   <hr className="bg-gray-400 h-0.5 w-0 m-auto my-2" />
@@ -243,61 +218,9 @@ console.error("Error fetching data: ", error);
           <p>Loading...</p>
         )}
       </div>
-
-      {open && (
-        <div
-        className ="fixed top-1/2 left-1/2"
-          style={{
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "#F6F5F2",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.25)",
-            zIndex: 10,
-          }}
-        >
-          {summary ? (
-            <div className = "relative  p-6 dark:bg-[#202124]">
-            <button className = "absolute right-6 top-6 text-red-500 font-bold text-xl" onClick={handleClose}>X</button>
-              <h1 className = "font-bold text-xl mb-3 dark:text-white">Summary</h1>
-
-              <ul className = "list-disc p-4 dark:text-white">
-              {summary.split("- ").map((s,index)=>(
-               (index!==0) && (<li className = "mb-5 text-justify" key={index}><p>{s}</p></li>)
-              ))}
-              </ul>
-
-            </div>
-          ) : (
-            <div className="loading relative dark:bg-[#202124]">
-            <button className = "absolute   right-2 top-0 text-red-500 font-bold text-xl" onClick={handleClose}>X</button>
-
-            <h1 className="mr-1 dark:text-white">Generating</h1>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  
-</div>
-          )}
+      </div>
         </div>
-      )}
-
-      {open && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-        />
-      )}
-      
-    </div>
-    </div>
-  );
+    )
 }
 
-export default Article;
+export default Bookmarks;
