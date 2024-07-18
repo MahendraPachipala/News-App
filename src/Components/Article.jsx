@@ -37,7 +37,6 @@ function Article() {
     console.log(darkmode);
   }
   
-  
   const handleClick = async (url) => {
     setOpen(true);
     
@@ -71,21 +70,36 @@ function Article() {
     })
   }
 
-  useEffect(() => {
-    axios({
-      method: 'get',
-      url: `https://newsapi.org/v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&apiKey=fe368080bde84609b012936a091fbe43`,
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-      },
-    })
-    .then((response) => {
-      setData(response.data.articles);
-    })
-    .catch((error) => {
-      console.error("Error fetching data: ", error);
-    });
-  }, []);
+//   useEffect(() => {
+// axios.get(`https://newsapi./v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&apiKey=fe368080bde84609b012936a091fbe43`)
+// .then((response) => {
+// setData(response.data.articles);
+// })
+// .catch((error) => {
+// console.error("Error fetching data: ", error);
+// });
+// }, []);
+
+useEffect(()=>{
+  const url = `https://api.worldnewsapi.com/search-news?source-countries=in&language=en&earliest-publish-date=${currdate}`;
+const apiKey = 'bc925b7e0a3a438d907bd4bc7f1ff609';
+
+fetch(url, {
+    method: 'GET',
+    headers: {
+        'x-api-key': apiKey
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+})
+.then(data => setData(data.news))
+.catch(error => console.error('There was a problem with the fetch operation:', error));
+
+},[]);
 
   const handleClose = () => {
     setOpen(false);
@@ -120,16 +134,16 @@ function Article() {
                   <div className="w-2/5 ">
                     <img
                       className="h-56  rounded-2xl m-4"
-                      src={article.urlToImage}
+                      src={article.image}
                       alt={article.title}
                     />
                   
                     <h1 className="font-bold text-xl pl-4">{article.title}</h1>
-                    <p className = "py-2 pl-4">{article.publishedAt.split("T")[0]}</p>
+                    <p className = "py-2 pl-4">{article.publish_date.split(" ")[0]}</p>
                   </div>
                   <div className="relative w-3/5 p-4  m-4">
                     <p className="absolute mr-5 text-justify font-normal h-44">
-                      {article.description}
+                      {article.summary}
                     </p>
                     <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
                       <div>
