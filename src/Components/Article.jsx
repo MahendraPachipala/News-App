@@ -100,7 +100,7 @@ fetch(url, {
 .catch(error => console.error('There was a problem with the fetch operation:', error));
 
 },[]);
-
+console.log(data);
   const handleClose = () => {
     setOpen(false);
     setSummary(null);
@@ -112,8 +112,7 @@ fetch(url, {
     
     <NavBar handledarkmode={handledarkmode}/>
       <div
-        className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"
-        
+        className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"  
       >
         {data.length > 0 ? (
           <div>
@@ -133,9 +132,9 @@ fetch(url, {
                 <div className="flex">
                   <div className="w-2/5 ">
                     <img
-                      className="h-56  rounded-2xl m-4"
+                      className="h-56  w-[85%] object-cover rounded-2xl m-4"
                       src={article.image}
-                      alt={article.title}
+                      alt="Image"
                     />
                   
                     <h1 className="font-bold text-xl pl-4">{article.title}</h1>

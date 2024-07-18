@@ -37,7 +37,7 @@ function Register() {
           })
         }
         console.log(user);
-        navigate('/login');
+        navigate('/');
       })
       .catch((err)=>{
         const errorMessage = err.message;
@@ -55,7 +55,7 @@ function Register() {
         })
       }
       console.log(user);
-      navigate('/login');
+      navigate('/');
     } )
     .catch((error) => alert(error.message))
     

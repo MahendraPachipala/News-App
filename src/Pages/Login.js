@@ -35,7 +35,7 @@ function Login() {
 
   const handleGoogleSignIn = async () => {
    await signInWithPopup(auth,provider).catch((error) => alert(error.message));  
-   navigate("/");
+   navigate("/Home");
   };
 
   return (

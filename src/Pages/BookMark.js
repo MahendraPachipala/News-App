@@ -70,11 +70,10 @@ const Bookmarks = ()=>{
     
     return(
         <div className = {`${darkmode ? "" :"dark"}`} >
-        <div className="bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5">
+        <div className="bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5">
             <NavBar handledarkmode={handledarkmode}/>
             <div
         className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"
-        
       >
         {bookmarks.length > 0 ? (
           <div>
@@ -94,7 +93,7 @@ const Bookmarks = ()=>{
                 <div className="flex">
                   <div className="w-2/5 ">
                     <img
-                      className="h-56  rounded-2xl m-4"
+                      className="h-56  w-[85%] object-cover rounded-2xl m-4"
                       src={article.image}
                       alt={article.title}
                     />
