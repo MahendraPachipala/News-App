@@ -64,7 +64,7 @@ function Register() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">Log in to your account</h2>
+        <h2 className="text-center text-3xl font-extrabold text-gray-900">Register here</h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -112,7 +112,7 @@ function Register() {
                 onClick = {onSubmit}
                 className="w-full bg-indigo-600 text-white py-2 px-4 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Log in
+                Register
               </button>
             </div>
           </form>
@@ -123,10 +123,11 @@ function Register() {
               type="button"
               className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-blue-300 focus:ring-blue-500"
             >
-              <span className="sr-only">Sign in with Google</span>
+              <span className="sr-only">Sign up with Google</span>
               <FaGoogle className="w-5 h-5 mr-2" />
-              Sign in with Google
+              Sign up with Google
             </button>
+            Already have an account? <a href="/" className="text-blue-500 hover:text-blue-700">Log in here</a>
           </div>
         </div>
       </div>

@@ -91,13 +91,14 @@ const Bookmarks = ()=>{
                 </label>
 
                 <div className="flex">
-                  <div className="w-2/5 ">
+                  <div className="w-2/5">
+                  <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600 text-white w-[100%] rounded-2xl m-4">
                     <img
-                      className="h-56  w-[85%] object-cover rounded-2xl m-4"
+                      className="h-56  w-[100%] object-cover rounded-2xl"
                       src={article.image}
                       alt={article.title}
                     />
-                  
+                  </div>
                     <h1 className="font-bold text-xl pl-4">{article.title}</h1>
                     <p className = "py-2 pl-4">{article.publish_date.split(" ")[0]}</p>
                   </div>

@@ -27,7 +27,7 @@ function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log("Logged in successfully!");
+      navigate("/Home");
     } catch (error) {
       console.error("Error signing in: ", error);
     }
@@ -103,6 +103,7 @@ function Login() {
               <FaGoogle className="w-5 h-5 mr-2" />
               Sign in with Google
             </button>
+            Don't have an account? <a className = "text-blue-500 hover:text-blue-700" href="/register">Sign up here</a>
           </div>
         </div>
       </div>
