@@ -3,6 +3,7 @@ import {useAuth} from '../config/AuthContext';
 import { auth,db } from "../config/firebase";
 import {getDoc,doc,arrayUnion} from "firebase/firestore";
 import NavBar from '../Components/navbar';
+import axios from "axios";
 
 
 
@@ -13,6 +14,7 @@ const Bookmarks = ()=>{
     const [open, setOpen] = useState(false);
     const [darkmode,setdarkmode] = useState(true);
     const ref = doc(db,"Users",userId);
+    const [summary, setSummary] = useState("");
 
     const handledarkmode = () => {
         setdarkmode(darkmode?false:true);
@@ -32,29 +34,34 @@ const Bookmarks = ()=>{
     const removeBookmark = async ()=>{
 
     }
+     
+    const handleClose = () => {
+      setOpen(false);
+      setSummary(null);
+    };
 
     const handleClick = async (url) => {
         setOpen(true);
         
-        // const options = {
-        //   method: "GET",
-        //   url: "https://article-extractor-and-summarizer.p.rapidapi.com/summarize",
-        //   params: {
-        //     url: url,
-        //     lang: "en",
-        //     engine: "2",
-        //   },
-        //   headers: {
-        //     "x-rapidapi-key": "69f8d926dcmshf47e885ee5df937p11305ajsn790164993433",
-        //     "x-rapidapi-host": "article-extractor-and-summarizer.p.rapidapi.com",
-        //   },
-        // };
-        // try {
-        //   const response = await axios.request(options);
-        //   setSummary(response.data.summary);
-        // } catch (error) {
-        //   console.error(error);
-        // }
+        const options = {
+          method: "GET",
+          url: "https://article-extractor-and-summarizer.p.rapidapi.com/summarize",
+          params: {
+            url: url,
+            lang: "en",
+            engine: "2",
+          },
+          headers: {
+            "x-rapidapi-key": "69f8d926dcmshf47e885ee5df937p11305ajsn790164993433",
+            "x-rapidapi-host": "article-extractor-and-summarizer.p.rapidapi.com",
+          },
+        };
+        try {
+          const response = await axios.request(options);
+          setSummary(response.data.summary);
+        } catch (error) {
+          console.error(error);
+        }
       };
 
 
@@ -218,6 +225,44 @@ const Bookmarks = ()=>{
           <p>Loading...</p>
         )}
       </div>
+      {open && (
+        <div
+        className ="fixed top-1/2 left-1/2"
+          style={{
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "#F6F5F2",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.25)",
+            zIndex: 10,
+          }}
+        >
+          {summary ? (
+            <div className = "relative  p-6 dark:bg-[#202124]">
+            <button className = "absolute right-6 top-6 text-red-500 font-bold text-xl" onClick={handleClose}>X</button>
+              <h1 className = "font-bold text-xl mb-3 dark:text-white">Summary</h1>
+
+              <ul className = "list-disc p-4 dark:text-white">
+              {summary.split("- ").map((s,index)=>(
+               (index!==0) && (<li className = "mb-5 text-justify" key={index}><p>{s}</p></li>)
+              ))}
+              </ul>
+
+            </div>
+          ) : (
+            <div className="loading relative dark:bg-[#202124]">
+            <button className = "absolute   right-2 top-0 text-red-500 font-bold text-xl" onClick={handleClose}>X</button>
+
+            <h1 className="mr-1 dark:text-white">Generating</h1>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  
+</div>
+          )}
+        </div>
+      )}
+
       </div>
         </div>
     )

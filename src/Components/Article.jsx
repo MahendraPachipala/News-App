@@ -37,6 +37,7 @@ function Article() {
     console.log(darkmode);
   }
   
+  
   const handleClick = async (url) => {
     setOpen(true);
     
@@ -71,14 +72,20 @@ function Article() {
   }
 
   useEffect(() => {
-axios.get(`https://newsapi.org/v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&apiKey=fe368080bde84609b012936a091fbe43`)
-.then((response) => {
-setData(response.data.articles);
-})
-.catch((error) => {
-console.error("Error fetching data: ", error);
-});
-}, []);
+    axios({
+      method: 'get',
+      url: `https://newsapi.org/v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&apiKey=fe368080bde84609b012936a091fbe43`,
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+      },
+    })
+    .then((response) => {
+      setData(response.data.articles);
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
