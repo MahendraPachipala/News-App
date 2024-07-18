@@ -95,16 +95,16 @@ const Bookmarks = ()=>{
                   <div className="w-2/5 ">
                     <img
                       className="h-56  rounded-2xl m-4"
-                      src={article.urlToImage}
+                      src={article.image}
                       alt={article.title}
                     />
                   
                     <h1 className="font-bold text-xl pl-4">{article.title}</h1>
-                    <p className = "py-2 pl-4">{article.publishedAt.split("T")[0]}</p>
+                    <p className = "py-2 pl-4">{article.publish_date.split(" ")[0]}</p>
                   </div>
                   <div className="relative w-3/5 p-4  m-4">
                     <p className="absolute mr-5 text-justify font-normal h-44">
-                      {article.description}
+                      {article.summary}
                     </p>
                     <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
                       <div>
