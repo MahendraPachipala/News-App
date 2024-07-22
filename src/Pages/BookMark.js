@@ -4,6 +4,7 @@ import { auth,db } from "../config/firebase";
 import {getDoc,doc,arrayUnion} from "firebase/firestore";
 import NavBar from '../Components/navbar';
 import axios from "axios";
+import Footer from "../Components/Footer";
 
 
 
@@ -12,13 +13,23 @@ const Bookmarks = ()=>{
     const userId = user.uid;
     const [bookmarks,setbookmarks] = useState([]);
     const [open, setOpen] = useState(false);
-    const [darkmode,setdarkmode] = useState(true);
+
+    const [darkmode, setDarkmode] = useState(() => {
+      return localStorage.getItem('dark') === 'true';
+    });
+    
     const ref = doc(db,"Users",userId);
     const [summary, setSummary] = useState("");
 
     const handledarkmode = () => {
-        setdarkmode(darkmode?false:true);
-      }
+      setDarkmode(prevDarkmode => {
+        const newDarkmode = !prevDarkmode;
+        localStorage.setItem('dark', newDarkmode);
+        return newDarkmode;
+      });
+    };
+
+      
       
     useEffect(()=>{
        
@@ -69,8 +80,8 @@ const Bookmarks = ()=>{
     //console.log(bookmarks);
     
     return(
-        <div className = {`${darkmode ? "" :"dark"}`} >
-        <div className="bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5">
+        <div className = {`h-[100%] ${darkmode ? "dark" :""}`} >
+        <div className="h-[100%]  bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5 pb-2">
             <NavBar handledarkmode={handledarkmode}/>
             <div
         className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"
@@ -103,8 +114,8 @@ const Bookmarks = ()=>{
                     <p className = "py-2 pl-4">{article.publish_date.split(" ")[0]}</p>
                   </div>
                   <div className="relative w-3/5 p-4  m-4">
-                    <p className="absolute mr-5 text-justify font-normal h-44">
-                      {article.summary}
+                    <p className="text-md absolute mr-5 text-justify font-normal h-44">
+                      {article.summary.slice(0,200)}...
                     </p>
                     <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
                       <div>
@@ -222,7 +233,15 @@ const Bookmarks = ()=>{
             ))}
           </div>
         ) : (
-          <p>Loading...</p>
+          <div class="flex justify-center items-center  lg:h-[560px]">
+    <div class="relative flex justify-center items-center">
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="h3">loading</div>
+        </div>
+</div>
         )}
       </div>
       {open && (
@@ -262,7 +281,7 @@ const Bookmarks = ()=>{
           )}
         </div>
       )}
-
+      <Footer/>
       </div>
         </div>
     )

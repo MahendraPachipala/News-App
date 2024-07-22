@@ -5,6 +5,7 @@ import { auth,db } from "../config/firebase";
 import {setDoc,doc,arrayUnion,updateDoc} from "firebase/firestore";
 import Cookies from "js-cookie";
 import { useAuth } from "../config/AuthContext";
+import Footer from "./Footer";
 
 
 
@@ -15,27 +16,27 @@ function Article() {
   const user = useAuth().currUser;
   const userId = user.uid;
   
-  const [darkmode,setdarkmode] = useState(true);
+  const [darkmode, setDarkmode] = useState(() => {
+    return localStorage.getItem('dark') === 'false';
+  });
+
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState("");
   const [profile,isprofile] = useState(true);
   const date = new Date();
-  const day = String(date.getDate()-1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth()+1).padStart(2, "0");
   const year = date.getFullYear();
   const currdate = `${year}-${month}-${day}`;
 
-  // useEffect(()=>{
-  //   auth.onAuthStateChanged((user)=>{
-  //     console.log(user);
-  //     Cookies.set('userId',user.uid);
-  //   })
-  // },[]);
 
   const handledarkmode = () => {
-    setdarkmode(darkmode?false:true);
-    console.log(darkmode);
-  }
+    setDarkmode(prevDarkmode => {
+      const newDarkmode = !prevDarkmode;
+      localStorage.setItem('dark', newDarkmode);
+      return newDarkmode;
+    });
+  };
   
   const handleClick = async (url) => {
     setOpen(true);
@@ -63,25 +64,15 @@ function Article() {
 
   const handleBookmark = async (article)=>{
 
-    // console.log(userId);
-    // console.log(article);
     updateDoc(doc(db,"Users",userId),{
       articles: arrayUnion(article)
     })
   }
 
-//   useEffect(() => {
-// axios.get(`https://newsapi./v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&apiKey=fe368080bde84609b012936a091fbe43`)
-// .then((response) => {
-// setData(response.data.articles);
-// })
-// .catch((error) => {
-// console.error("Error fetching data: ", error);
-// });
-// }, []);
+
 
 useEffect(()=>{
-  const url = `https://api.worldnewsapi.com/search-news?source-countries=in&language=en&earliest-publish-date=${currdate}`;
+  const url = `https://api.worldnewsapi.com/search-news?source-countries=in&language=en&number=100&earliest-publish-date=${currdate}`;
 const apiKey = 'bc925b7e0a3a438d907bd4bc7f1ff609';
 
 fetch(url, {
@@ -100,7 +91,7 @@ fetch(url, {
 .catch(error => console.error('There was a problem with the fetch operation:', error));
 
 },[]);
-console.log(data);
+
   const handleClose = () => {
     setOpen(false);
     setSummary(null);
@@ -140,12 +131,12 @@ console.log(data);
                   </div>
                     
                   
-                    <h1 className="font-bold text-xl pl-4">{article.title}</h1>
+                    <h1 className="font-bold text-xl pl-4">{article.title.slice(0,85)}...</h1>
                     <p className = "py-2 pl-4">{article.publish_date.split(" ")[0]}</p>
                   </div>
                   <div className="relative w-3/5 p-4  m-4">
                     <p className="absolute mr-5 text-justify font-normal h-44">
-                      {article.summary}
+                    {article.summary.slice(0,280)}...
                     </p>
                     <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
                       <div>
@@ -263,7 +254,16 @@ console.log(data);
             ))}
           </div>
         ) : (
-          <p>Loading...</p>
+          <div class="flex justify-center items-center h-[560px]">
+    <div class="relative flex justify-center items-center">
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="h3">loading</div>
+        </div>
+</div>
+
         )}
       </div>
 
@@ -304,7 +304,7 @@ console.log(data);
           )}
         </div>
       )}
-
+    
       {open && (
         <div
           style={{
@@ -317,7 +317,7 @@ console.log(data);
           }}
         />
       )}
-      
+      <Footer/>
     </div>
     </div>
   );

@@ -10,7 +10,6 @@ const Routers = ()=>{
   return(
   <BrowserRouter>
     <Routes>
-
        <Route path = "/Home" element = {<Article/>}/>
        <Route path = "/" element = {<Login/>}/>
        <Route path = "/Register" element = {<Register/>}/>
