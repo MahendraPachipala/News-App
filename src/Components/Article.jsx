@@ -3,7 +3,6 @@ import axios from "axios";
 import NavBar from "../Components/navbar";
 import { auth,db } from "../config/firebase";
 import {setDoc,doc,arrayUnion,updateDoc} from "firebase/firestore";
-import Cookies from "js-cookie";
 import { useAuth } from "../config/AuthContext";
 import Footer from "./Footer";
 
