@@ -3,7 +3,7 @@ import axios from "axios";
 import NavBar from "../Components/navbar";
 import { auth,db } from "../config/firebase";
 import {setDoc,doc,arrayUnion,updateDoc} from "firebase/firestore";
-import { useAuth } from "../config/AuthContext";
+import { useAuth,useDarkMode } from "../config/AuthContext";
 import Footer from "./Footer";
 
 
@@ -11,13 +11,11 @@ import Footer from "./Footer";
 
 function Article() {
   const [data, setData] = useState([]);
- 
+  const {darkmode} = useDarkMode();
   const user = useAuth().currUser;
   const userId = user.uid;
   
-  const [darkmode, setDarkmode] = useState(() => {
-    return localStorage.getItem('dark') === 'false';
-  });
+  
 
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState("");
@@ -29,13 +27,7 @@ function Article() {
   const currdate = `${year}-${month}-${day}`;
 
 
-  const handledarkmode = () => {
-    setDarkmode(prevDarkmode => {
-      const newDarkmode = !prevDarkmode;
-      localStorage.setItem('dark', newDarkmode);
-      return newDarkmode;
-    });
-  };
+  
   
   const handleClick = async (url) => {
     setOpen(true);
@@ -100,7 +92,7 @@ fetch(url, {
     <div className = {`${darkmode ? "" :"dark"}`}>
     <div className="bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5">
     
-    <NavBar handledarkmode={handledarkmode}/>
+    <NavBar/>
       <div
         className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"  
       >

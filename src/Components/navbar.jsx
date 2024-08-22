@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../config/AuthContext";
+import { useAuth,useDarkMode } from "../config/AuthContext";
 
-const Navbar = ({ handledarkmode }) => {
+const Navbar = () => {
   const [search, setSearch] = useState("");
   const user = useAuth().currUser;
   const pfp = user.photoURL;
   const [profile, setProfile] = useState(false);
+  const{toggleDarkMode} = useDarkMode();
 
   return (
     <div className="sticky top-0 z-50">
@@ -22,7 +23,7 @@ const Navbar = ({ handledarkmode }) => {
       ></input>
 
       <label className="switch mt-3 ml-4">
-        <input type="checkbox" onClick={handledarkmode} />
+        <input type="checkbox" onClick={toggleDarkMode} />
         <span className="slider"></span>
       </label>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {useAuth} from '../config/AuthContext';
+import {useAuth,useDarkMode} from '../config/AuthContext';
 import { auth,db } from "../config/firebase";
 import {getDoc,doc,arrayUnion} from "firebase/firestore";
 import NavBar from '../Components/navbar';
@@ -12,20 +12,11 @@ const Bookmarks = ()=>{
     const [bookmarks,setbookmarks] = useState([]);
     const [open, setOpen] = useState(false);
 
-    const [darkmode, setDarkmode] = useState(() => {
-      return localStorage.getItem('dark') === 'true';
-    });
+    const {darkmode} = useDarkMode();
     
     const ref = doc(db,"Users",userId);
     const [summary, setSummary] = useState("");
 
-    const handledarkmode = () => {
-      setDarkmode(prevDarkmode => {
-        const newDarkmode = !prevDarkmode;
-        localStorage.setItem('dark', newDarkmode);
-        return newDarkmode;
-      });
-    };
 
     useEffect(()=>{
        
@@ -76,9 +67,9 @@ const Bookmarks = ()=>{
     //console.log(bookmarks);
     
     return(
-        <div className = {`h-[100%] ${darkmode ? "dark" :""}`} >
+        <div className = {`h-[100%] ${darkmode ? "" :"dark"}`} >
         <div className="h-[100%]  bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5 pb-2 min-h-screen">
-            <NavBar handledarkmode={handledarkmode}/>
+            <NavBar/>
         <div
         className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"
       >
