@@ -36,7 +36,8 @@ function Article() {
   };
 
   useEffect(() => {
-    axios.get(`https://newsapi.org/v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&domains=techcrunch.com,thenextweb.com&apiKey=7027cf58e4b74a5ca31057eff8752216`)
+    axios.get(`https://newsapi.org/v2/everything?from=${currdate}&to=${currdate}&sources=the-times-of-india&language=en&domains=techcrunch.com,thenextweb.com&apiKey=43c4506078914be3afaed92450bf23ec`)
+    // 7027cf58e4b74a5ca31057eff8752216
       .then((response) => {
         setData(response.data.articles);
         console.log(data);

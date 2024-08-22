@@ -12,7 +12,7 @@ const Navbar = () => {
     <div className="sticky top-0 z-50">
       <div className="navbar h-14 flex bg-[#F0EBE3]-700 dark:bg-[#242525]-700  transition transition-all delay-0.5">
       
-      <a href ="/Home"><h1 className="text-4xl my-1 mx-11 dark:text-[#8bb4f8] transition transition-all delay-0.5">
+      <a href ="/Home"><h1 className="text-4xl my-1 mx-11 dark:text-white transition transition-all delay-0.5 ">
         NEWS
       </h1></a> 
       <input
