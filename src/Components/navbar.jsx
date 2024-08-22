@@ -12,9 +12,9 @@ const Navbar = () => {
     <div className="sticky top-0 z-50">
       <div className="navbar h-14 flex bg-[#F0EBE3]-700 dark:bg-[#242525]-700  transition transition-all delay-0.5">
       
-      <h1 className="text-4xl my-1 mx-11 dark:text-[#8bb4f8] transition transition-all delay-0.5">
+      <a href ="/Home"><h1 className="text-4xl my-1 mx-11 dark:text-[#8bb4f8] transition transition-all delay-0.5">
         NEWS
-      </h1>
+      </h1></a> 
       <input
         placeholder="Search"
         className=" w-3/4 my-2.5 rounded-xl px-2 bg-#F6F5F2  dark:bg-[#3c4043] transition transition-all delay-0.5"
