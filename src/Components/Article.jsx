@@ -1,32 +1,29 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import NavBar from "../Components/navbar";
-import { auth,db } from "../config/firebase";
-import {setDoc,doc,arrayUnion,updateDoc} from "firebase/firestore";
-import { useAuth,useDarkMode } from "../config/AuthContext";
+import { auth, db } from "../config/firebase";
+import { setDoc, doc, arrayUnion, updateDoc } from "firebase/firestore";
+import { useAuth, useDarkMode } from "../config/AuthContext";
 import Footer from "./Footer";
 
 function Article() {
   const [data, setData] = useState([]);
-  const {darkmode} = useDarkMode();
+  const { darkmode } = useDarkMode();
   const user = useAuth().currUser;
   const userId = user.uid;
-  
+
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState("");
-  const [profile,isprofile] = useState(true);
+  const [profile, isprofile] = useState(true);
   const date = new Date();
   const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth()+1).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
   const currdate = `${year}-${month}-${day}`;
 
-
-  
-  
   const handleClick = async (url) => {
     setOpen(true);
-    
+
     const options = {
       method: "GET",
       url: "https://article-extractor-and-summarizer.p.rapidapi.com/summarize",
@@ -48,32 +45,30 @@ function Article() {
     }
   };
 
-  const handleBookmark = async (article)=>{
+  const handleBookmark = async (article) => {
+    updateDoc(doc(db, "Users", userId), {
+      articles: arrayUnion(article),
+    });
+  };
 
-    updateDoc(doc(db,"Users",userId),{
-      articles: arrayUnion(article)
-    })
-  }
+  useEffect(() => {
+    const url = `https://api.worldnewsapi.com/search-news?source-countries=in&language=en&number=100&earliest-publish-date=${currdate}`;
+    const apiKey = "3cf3764e96944c1aa18458083d3092a9";
 
-
-
-useEffect(() => {
-  const url = `https://api.worldnewsapi.com/search-news?source-countries=in&language=en&number=100&earliest-publish-date=${currdate}`;
-  const apiKey = 'bc925b7e0a3a438d907bd4bc7f1ff609';
-
-  axios.get(url, {
-    headers: {
-      'x-api-key': apiKey
-    }
-  })
-  .then(response => {
-    setData(response.data.news);
-  })
-  .catch(error => {
-    console.error('There was a problem with the axios request:', error);
-  });
-
-}, []);
+    axios
+      .get(url, {
+        headers: {
+          "x-api-key": apiKey,
+        },
+      })
+      .then((response) => {
+        console.log(response.data.news);
+        setData(response.data.news);
+      })
+      .catch((error) => {
+        console.error("There was a problem with the axios request:", error);
+      });
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -81,227 +76,259 @@ useEffect(() => {
   };
 
   return (
-    <div className = {`${darkmode ? "" :"dark"}`}>
-    <div className="bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5">
-    
-    <NavBar/>
-      <div
-        className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"  
-      >
-        {data.length > 0 ? (
-          <div>
-            {data.map((article, index) => (
-              <div className="relative" key={index}>
-                <label className="ui-bookmark right-1 top-2 absolute">
-                  <input type="checkbox" onChange={() => handleBookmark(article)}/>
-                  <div className="bookmark">
-                    <svg viewBox="0 0 32 32">
-                      <g>
-                        <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
-                      </g>
-                    </svg>
-                  </div>
-                </label>
-
-                <div className="flex">
-                  <div className="w-2/5">
-                  <div className="bg-[#F6F5F2]  w-[100%] rounded-2xl m-4">
-                  <img
-                      className="h-56  w-[100%] object-cover rounded-2xl "
-                      src={article.image}
-                      alt="Image"
+    <div className={`${darkmode ? "" : "dark"}`}>
+      <div className="bg-[#F6F5F2] dark:bg-[#29292d] transition transition-all delay-0.5">
+        <NavBar />
+        <div className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5">
+          {data.length > 0 ? (
+            <div>
+              {data.map((article, index) => (
+                <div className="relative" key={index}>
+                  <label className="ui-bookmark right-1 top-2 absolute">
+                    <input
+                      type="checkbox"
+                      onChange={() => handleBookmark(article)}
                     />
-                  </div>
-                    
-                  
-                    <h1 className="font-bold text-xl pl-4">{article.title.slice(0,85)}...</h1>
-                    <p className = "py-2 pl-4">{article.publish_date.split(" ")[0]}</p>
-                  </div>
-                  <div className="relative w-3/5 p-4  m-4">
-                    <p className="absolute mr-5 text-justify font-normal h-44">
-                    {article.summary.slice(0,280)}...
-                    </p>
-                    <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
-                      <div>
-                        <a href={article.url}>
-                          <button className="readmore-btn">
-                            <span className="book-wrapper">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="rgb(86, 69, 117)"
-                                viewBox="0 0 126 75"
-                                className="book"
-                              >
-                                <rect
-                                  strokeWidth="3"
-                                  stroke="#fff"
-                                  rx="7.5"
-                                  height="70"
-                                  width="121"
-                                  y="2.5"
-                                  x="2.5"
-                                ></rect>
-                                <line
-                                  strokeWidth="3"
-                                  stroke="#fff"
-                                  y2="75"
-                                  x2="63.5"
-                                  x1="63.5"
-                                ></line>
-                                <path
-                                  strokeLinecap="round"
-                                  strokeWidth="4"
-                                  stroke="#fff"
-                                  d="M25 20H50"
-                                ></path>
-                                <path
-                                  strokeLinecap="round"
-                                  strokeWidth="4"
-                                  stroke="#fff"
-                                  d="M101 20H76"
-                                ></path>
-                                <path
-                                  strokeLinecap="round"
-                                  strokeWidth="4"
-                                  stroke="#fff"
-                                  d="M16 30L50 30"
-                                ></path>
-                                <path
-                                  strokeLinecap="round"
-                                  strokeWidth="4"
-                                  stroke="#fff"
-                                  d="M110 30L76 30"
-                                ></path>
-                              </svg>
+                    <div className="bookmark">
+                      <svg viewBox="0 0 32 32">
+                        <g>
+                          <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
+                        </g>
+                      </svg>
+                    </div>
+                  </label>
 
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 65 75"
-                                className="book-page"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeWidth="4"
-                                  stroke="#fff"
-                                  d="M40 20H15"
-                                ></path>
-                                <path
-                                  strokeLinecap="round"
-                                  strokeWidth="4"
-                                  stroke="#fff"
-                                  d="M49 30L15 30"
-                                ></path>
-                                <path
-                                  strokeWidth="3"
-                                  stroke="#fff"
-                                  d="M2.5 2.5H55C59.1421 2.5 62.5 5.85786 62.5 10V65C62.5 69.1421 59.1421 72.5 55 72.5H2.5V2.5Z"
-                                ></path>
-                              </svg>
-                            </span>
-                            <span className="readtext dark:text-white"> Read more </span>
-                          </button>
-                        </a>
+                  <div className="flex">
+                    <div className="w-2/5">
+                      <div className="bg-[#F6F5F2]  w-[100%] rounded-2xl m-4">
+                        <img
+                          className="h-56  w-[100%] object-cover rounded-2xl "
+                          src={article.image}
+                          alt="Image"
+                        />
                       </div>
 
-                      <span> </span>
-                      <div>
-                        <button
-                          className="btn"
-                          onClick={() => handleClick(article.url)}
-                        >
-                          <svg
-                            height="24"
-                            width="24"
-                            fill="#FFFFFF"
-                            viewBox="0 0 24 24"
-                            data-name="Layer 1"
-                            id="Layer_1"
-                            className="sparkle"
+                      <h1 className="font-bold text-xl pl-4">
+                        {article.title?.length > 85
+                          ? article.title.substring(
+                              0,
+                              article.title.lastIndexOf(" ", 85)
+                            ) + "..."
+                          : article.title}
+                        ...
+                      </h1>
+                      <p className="py-2 pl-4">
+                        {article.publish_date.split(" ")[0]}
+                      </p>
+                    </div>
+                    <div className="relative w-3/5 p-4  m-4">
+                      <p className="absolute mr-5 text-justify font-normal h-44">
+                        {article.summary?.length > 280
+                          ? article.summary.substring(
+                              0,
+                              article.summary.lastIndexOf(" ", 280)
+                            ) + "..."
+                          : article.summary}
+                        ...
+                      </p>
+                      <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
+                        <div>
+                          <a href={article.url}>
+                            <button className="readmore-btn">
+                              <span className="book-wrapper">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="rgb(86, 69, 117)"
+                                  viewBox="0 0 126 75"
+                                  className="book"
+                                >
+                                  <rect
+                                    strokeWidth="3"
+                                    stroke="#fff"
+                                    rx="7.5"
+                                    height="70"
+                                    width="121"
+                                    y="2.5"
+                                    x="2.5"
+                                  ></rect>
+                                  <line
+                                    strokeWidth="3"
+                                    stroke="#fff"
+                                    y2="75"
+                                    x2="63.5"
+                                    x1="63.5"
+                                  ></line>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeWidth="4"
+                                    stroke="#fff"
+                                    d="M25 20H50"
+                                  ></path>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeWidth="4"
+                                    stroke="#fff"
+                                    d="M101 20H76"
+                                  ></path>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeWidth="4"
+                                    stroke="#fff"
+                                    d="M16 30L50 30"
+                                  ></path>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeWidth="4"
+                                    stroke="#fff"
+                                    d="M110 30L76 30"
+                                  ></path>
+                                </svg>
+
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 65 75"
+                                  className="book-page"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeWidth="4"
+                                    stroke="#fff"
+                                    d="M40 20H15"
+                                  ></path>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeWidth="4"
+                                    stroke="#fff"
+                                    d="M49 30L15 30"
+                                  ></path>
+                                  <path
+                                    strokeWidth="3"
+                                    stroke="#fff"
+                                    d="M2.5 2.5H55C59.1421 2.5 62.5 5.85786 62.5 10V65C62.5 69.1421 59.1421 72.5 55 72.5H2.5V2.5Z"
+                                  ></path>
+                                </svg>
+                              </span>
+                              <span className="readtext dark:text-white">
+                                {" "}
+                                Read more{" "}
+                              </span>
+                            </button>
+                          </a>
+                        </div>
+
+                        <span> </span>
+                        <div>
+                          <button
+                            className="btn"
+                            onClick={() => handleClick(article.url)}
                           >
-                            <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
-                          </svg>
-                          <span className="text">Summary</span>
-                        </button>
+                            <svg
+                              height="24"
+                              width="24"
+                              fill="#FFFFFF"
+                              viewBox="0 0 24 24"
+                              data-name="Layer 1"
+                              id="Layer_1"
+                              className="sparkle"
+                            >
+                              <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+                            </svg>
+                            <span className="text">Summary</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {index !== data.length - 1 ? (
+                    <hr className="bg-gray-400 h-0.5 w-11/12 m-auto my-2" />
+                  ) : (
+                    <hr className="bg-gray-400 h-0.5 w-0 m-auto my-2" />
+                  )}
                 </div>
-
-                {index !== data.length - 1 ? (
-                  <hr className="bg-gray-400 h-0.5 w-11/12 m-auto my-2" />
-                ) : (
-                  <hr className="bg-gray-400 h-0.5 w-0 m-auto my-2" />
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div class="flex justify-center items-center h-[560px]">
-    <div class="relative flex justify-center items-center">
-            <div id="ring"></div>
-            <div id="ring"></div>
-            <div id="ring"></div>
-            <div id="ring"></div>
-            <div id="h3">loading</div>
-        </div>
-</div>
-
-        )}
-      </div>
-
-      {open && (
-        <div
-        className ="fixed top-1/2 left-1/2"
-          style={{
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "#F6F5F2",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.25)",
-            zIndex: 10,
-          }}
-        >
-          {summary ? (
-            <div className = "relative  p-6 dark:bg-[#202124]">
-            <button className = "absolute right-6 top-6 text-red-500 font-bold text-xl" onClick={handleClose}>X</button>
-              <h1 className = "font-bold text-xl mb-3 dark:text-white">Summary</h1>
-
-              <ul className = "list-disc p-4 dark:text-white">
-              {summary.split("- ").map((s,index)=>(
-               (index!==0) && (<li className = "mb-5 text-justify" key={index}><p>{s}</p></li>)
               ))}
-              </ul>
-
             </div>
           ) : (
-            <div className="loading relative dark:bg-[#202124]">
-            <button className = "absolute   right-2 top-0 text-red-500 font-bold text-xl" onClick={handleClose}>X</button>
-
-            <h1 className="mr-1 dark:text-white">Generating</h1>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  
-</div>
+            <div class="flex justify-center items-center h-[560px]">
+              <div class="relative flex justify-center items-center">
+                <div id="ring"></div>
+                <div id="ring"></div>
+                <div id="ring"></div>
+                <div id="ring"></div>
+                <div id="h3">loading</div>
+              </div>
+            </div>
           )}
         </div>
-      )}
-    
-      {open && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-        />
-      )}
-      <Footer/>
-    </div>
+
+        {open && (
+          <div
+            className="fixed top-1/2 left-1/2"
+            style={{
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "#F6F5F2",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.25)",
+              zIndex: 10,
+            }}
+          >
+            {summary ? (
+              <div className="relative  p-6 dark:bg-[#202124]">
+                <button
+                  className="absolute right-6 top-6 text-red-500 font-bold text-xl"
+                  onClick={handleClose}
+                >
+                  X
+                </button>
+                <h1 className="font-bold text-xl mb-3 dark:text-white">
+                  Summary
+                </h1>
+
+                <ul className="list-disc p-4 dark:text-white">
+                  {summary.split("- ").map(
+                    (s, index) =>
+                      index !== 0 && (
+                        <li className="mb-5 text-justify" key={index}>
+                          <p>{s}</p>
+                        </li>
+                      )
+                  )}
+                </ul>
+              </div>
+            ) : (
+              <div className="loading relative dark:bg-[#202124]">
+                <button
+                  className="absolute   right-2 top-0 text-red-500 font-bold text-xl"
+                  onClick={handleClose}
+                >
+                  X
+                </button>
+
+                <h1 className="mr-1 dark:text-white">Generating</h1>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {open && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          />
+        )}
+        <Footer />
+      </div>
     </div>
   );
 }

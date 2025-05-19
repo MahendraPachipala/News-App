@@ -73,7 +73,7 @@ const Bookmarks = ()=>{
         <div
         className="w-3/4 m-auto my-10 pt-2 px-2 rounded-3xl bg-[#F0EBE3] dark:bg-[#202124] dark:text-white transition transition-all delay-0.5"
       >
-        {bookmarks.length > 0 ? (
+        {bookmarks?.length > 0 ? (
           <div>
             {bookmarks.map((article, index) => (
               <div className="relative" key={index}>
@@ -102,7 +102,7 @@ const Bookmarks = ()=>{
                   </div>
                   <div className="relative w-3/5 p-4  m-4">
                     <p className="text-md absolute mr-5 text-justify font-normal h-44">
-                      {article.summary.slice(0,200)}...
+                      {article.summary?.slice(0,200)}...
                     </p>
                     <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
                       <div>
