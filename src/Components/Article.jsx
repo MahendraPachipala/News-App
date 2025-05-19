@@ -6,17 +6,12 @@ import {setDoc,doc,arrayUnion,updateDoc} from "firebase/firestore";
 import { useAuth,useDarkMode } from "../config/AuthContext";
 import Footer from "./Footer";
 
-
-
-
 function Article() {
   const [data, setData] = useState([]);
   const {darkmode} = useDarkMode();
   const user = useAuth().currUser;
   const userId = user.uid;
   
-  
-
   const [open, setOpen] = useState(false);
   const [summary, setSummary] = useState("");
   const [profile,isprofile] = useState(true);
@@ -62,26 +57,23 @@ function Article() {
 
 
 
-useEffect(()=>{
+useEffect(() => {
   const url = `https://api.worldnewsapi.com/search-news?source-countries=in&language=en&number=100&earliest-publish-date=${currdate}`;
-const apiKey = 'bc925b7e0a3a438d907bd4bc7f1ff609';
+  const apiKey = 'bc925b7e0a3a438d907bd4bc7f1ff609';
 
-fetch(url, {
-    method: 'GET',
+  axios.get(url, {
     headers: {
-        'x-api-key': apiKey
+      'x-api-key': apiKey
     }
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response.json();
-})
-.then(data => setData(data.news))
-.catch(error => console.error('There was a problem with the fetch operation:', error));
+  })
+  .then(response => {
+    setData(response.data.news);
+  })
+  .catch(error => {
+    console.error('There was a problem with the axios request:', error);
+  });
 
-},[]);
+}, []);
 
   const handleClose = () => {
     setOpen(false);
