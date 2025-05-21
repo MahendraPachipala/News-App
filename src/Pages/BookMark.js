@@ -102,7 +102,7 @@ const Bookmarks = ()=>{
                   </div>
                   <div className="relative w-3/5 p-4  m-4">
                     <p className="text-md absolute mr-5 text-justify font-normal h-44">
-                      {article.summary?.slice(0,200)}...
+                      {article.text?.slice(0,200)}...
                     </p>
                     <div className="absolute bottom-0 right-0 flex justify-between w-8/12">
                       <div>
